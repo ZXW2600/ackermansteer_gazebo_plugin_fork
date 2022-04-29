@@ -229,18 +229,18 @@ namespace gazebo {
         switch (i) {
           case FL:
           case FR:
-            steer_ang_curr = steer_joints_[i]->GetAngle(X).Radian();
+            steer_ang_curr = steer_joints_[i]->Position();
             steer_error = steer_ang_curr - steer_target_angles_[i];
             steer_cmd_effort = steer_PIDs_[i].Update(steer_error, step_time);
             steer_joints_[i]->SetForce(X, steer_cmd_effort);
             break;
           case RL:
           case RR:
-            drive_vel_curr = drive_joints_[i]->GetVelocity(Z) *
+            drive_vel_curr = drive_joints_[i]->GetVelocity(X) *
                wheel_diameter_/2.0;
             drive_error = drive_vel_curr - drive_target_velocities_[i];
             drive_cmd_effort = drive_PIDs_[i].Update(drive_error, step_time);
-            drive_joints_[i]->SetForce(Z, drive_cmd_effort);
+            drive_joints_[i]->SetForce(X, drive_cmd_effort);
         }
         if (debug_) {
           double _pe, _ie, _de;
