@@ -34,6 +34,10 @@
 #include<cmath>
 #include<vector>
 
+#include <ackermansteer/ackermansteerConfig.h>
+
+#include <dynamic_reconfigure/server.h>
+
 namespace gazebo {
 // Wheel order follows cartestion quadrant numbering
 // when x axis indicates primary direction of motion
@@ -57,6 +61,9 @@ class AckermanSteer : public ModelPlugin {
     physics::ModelPtr model;
     event::ConnectionPtr updateConnection_;
     GazeboRosPtr gazebo_ros_;
+    
+    std::unique_ptr<ros::NodeHandle> rosNode;
+
 
     std::string command_topic_;
     std::string odometry_topic_;
@@ -76,24 +83,11 @@ class AckermanSteer : public ModelPlugin {
     double update_rate_;
     double update_period_;
 
-    double drive_p_;
-    double drive_i_;
-    double drive_d_;
-    double drive_imax_;
-    double drive_imin_;
-    double drive_init_velocity_;
-    double drive_cmd_max_;
-    double steer_p_;
-    double steer_i_;
-    double steer_d_;
-    double steer_imax_;
-    double steer_imin_;
-    double steer_max_effort_;
-    double steer_init_angle_;
-    double steer_cmd_max_;
+
 
     double x_;
     double rot_;
+
 
     ros::Subscriber cmd_vel_subscriber_;
     ros::CallbackQueue queue_;
@@ -110,6 +104,28 @@ class AckermanSteer : public ModelPlugin {
     std::vector<physics::JointPtr> steer_joints_, drive_joints_;
     std::vector<common::PID> steer_PIDs_, drive_PIDs_;
     std::vector<double> steer_target_angles_, drive_target_velocities_;
+
+   // dynamic reconfigue pid parameters
+   double drive_p_;
+   double drive_i_;
+   double drive_d_;
+   double drive_imax_;
+   double drive_imin_;
+   double drive_init_velocity_;
+   double drive_cmd_max_;
+   double steer_p_;
+   double steer_i_;
+   double steer_d_;
+   double steer_imax_;
+   double steer_imin_;
+   double steer_max_effort_;
+   double steer_init_angle_;
+   double steer_cmd_max_;
+
+   std::mutex pid_mutex;
+   std::shared_ptr<dynamic_reconfigure::Server<ackermansteer::ackermansteerConfig>> dynamic_reconfigure_server_;
+   void reconfigueCallback(ackermansteer::ackermansteerConfig &config, uint32_t level);
+
 };
 }  // namespace gazebo
 

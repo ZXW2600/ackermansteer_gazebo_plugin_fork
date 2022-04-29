@@ -14,6 +14,7 @@ find_package(catkin REQUIRED
    gazebo_ros
    gazebo_plugins
    roscpp
+   dynamic_reconfigure
 )
 find_package(gazebo REQUIRED)
 
@@ -88,10 +89,9 @@ find_package(gazebo REQUIRED)
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/ackermansteer.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -102,18 +102,19 @@ find_package(gazebo REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-#catkin_package(
+# catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES model_push
 #  CATKIN_DEPENDS other_catkin_pkg
-#   DEPENDS 
+# DEPENDS 
 #      gazebo_ros
 #   CATKIN_DEPENDS
 #   INCLUDE_DIRS
 #   LIBRARIES
 #      gazebo_ros_utils
-#
-#)
+# )
+catkin_package(CATKIN_DEPENDS dynamic_reconfigure )
+
 
 ###########
 ## Build ##
@@ -122,7 +123,7 @@ find_package(gazebo REQUIRED)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+   include
    ${catkin_INCLUDE_DIRS}
    ${GAZEBO_INCLUDE_DIRS}
 )
@@ -137,6 +138,9 @@ add_library(${PROJECT_NAME}
    SHARED
    src/ackermansteer.cpp
 )
+
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
+
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -186,11 +190,11 @@ target_link_libraries(${PROJECT_NAME}
 # )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
